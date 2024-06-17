@@ -1,0 +1,74 @@
+-- Создание таблицы для товаров
+CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    Description TEXT,
+    ArticleNumber VARCHAR(50) UNIQUE,
+    Color VARCHAR(50),
+    Size VARCHAR(50),
+    Weight DECIMAL(10, 2),
+    CONSTRAINT CHK_Weight CHECK (Weight >= 0)
+);
+
+-- Создание таблицы для фотографий товаров
+CREATE TABLE ProductPhotos (
+    PhotoID INT PRIMARY KEY,
+    ProductID INT,
+    PhotoURL VARCHAR(255) NOT NULL,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- Создание таблицы для видеообзоров товаров
+CREATE TABLE ProductVideos (
+    VideoID INT PRIMARY KEY,
+    ProductID INT,
+    VideoURL VARCHAR(255) NOT NULL,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- Создание таблицы для категорий товаров
+CREATE TABLE Categories (
+    CategoryID INT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    ParentCategoryID INT,
+    FOREIGN KEY (ParentCategoryID) REFERENCES Categories(CategoryID)
+);
+
+-- Создание таблицы для связи товаров с категориями
+CREATE TABLE ProductCategories (
+    ProductID INT,
+    CategoryID INT,
+    PRIMARY KEY (ProductID, CategoryID),
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+    FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID)
+);
+
+-- Создание таблицы для вопросов по товарам
+CREATE TABLE ProductQuestions (
+    QuestionID INT PRIMARY KEY,
+    ProductID INT,
+    QuestionText TEXT NOT NULL,
+    IsAnonymous BIT,
+    Email VARCHAR(255),
+    AnswerText TEXT,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- Создание таблицы для отзывов о товарах
+CREATE TABLE ProductReviews (
+    ReviewID INT PRIMARY KEY,
+    ProductID INT,
+    PhoneNumber VARCHAR(20) NOT NULL,
+    ConfirmationCode VARCHAR(10) NOT NULL,
+    Rating INT CHECK (Rating BETWEEN 1 AND 5),
+    Comment TEXT,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+);
+
+-- Создание таблицы для отметок отзывов как полезных или бесполезных
+CREATE TABLE ReviewVotes (
+    ReviewID INT,
+    IsHelpful BIT,
+    PRIMARY KEY (ReviewID, IsHelpful),
+    FOREIGN KEY (ReviewID) REFERENCES ProductReviews(ReviewID)
+);
